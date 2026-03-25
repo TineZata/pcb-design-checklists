@@ -220,6 +220,26 @@ main { max-width: 1180px; margin: 0 auto; padding: 32px 24px 64px; }
 .status-select.badge-pending { background: var(--pending-bg); color: var(--pending-text); border-color: var(--pending-border); }
 .status-select.badge-empty   { background: var(--na-bg);      color: var(--text-light);   border-color: var(--border); }
 
+/* Editable notes textarea */
+.note-edit {
+  width: 100%;
+  min-width: 120px;
+  padding: 4px 6px;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  resize: vertical;
+  line-height: 1.45;
+  transition: border-color 0.15s, background 0.15s;
+  box-sizing: border-box;
+}
+.note-edit:hover  { border-color: var(--border); background: var(--surface); }
+.note-edit:focus  { border-color: var(--accent); background: var(--surface); outline: none; }
+.note-edit::placeholder { color: var(--text-light); font-style: italic; }
+
 /* Reset button */
 .btn-reset {
   padding: 8px 14px;

@@ -180,13 +180,17 @@
   /* ── localStorage helpers ────────────────────────────────────────────── */
   function lsPrefix(csvUrl) { return 'pcb-cl:' + csvUrl + ':'; }
 
-  function loadOverrides(csvUrl, rows, statusKeys) {
+  function loadOverrides(csvUrl, rows, statusKeys, extraCols) {
     try {
       var prefix = lsPrefix(csvUrl);
       rows.forEach(function(row, idx) {
         statusKeys.forEach(function(sk) {
           var saved = localStorage.getItem(prefix + idx + ':' + sk.key);
           if (saved !== null) row[sk.key] = saved;
+        });
+        extraCols.forEach(function(ec) {
+          var saved = localStorage.getItem(prefix + idx + ':' + ec.key);
+          if (saved !== null) row[ec.key] = saved;
         });
       });
     } catch (e) { /* localStorage may be unavailable (e.g. private browsing with strict settings) */ }
@@ -222,7 +226,7 @@
     fetchCSV(csvUrl).then(function(rows) {
 
       /* Apply any saved overrides before rendering */
-      loadOverrides(csvUrl, rows, statusKeys);
+      loadOverrides(csvUrl, rows, statusKeys, extraCols);
 
       var grouped   = groupBy(rows, groupKey);
       var allStats  = calcStats(rows, statusKeys);
@@ -295,7 +299,14 @@
 
           var extraTD = extraCols.map(function(ec) {
             var v = row[ec.key] || '';
-            return '<td class="col-extra">' + (v ? '<span class="note-text">' + _esc(v) + '</span>' : '') + '</td>';
+            return (
+              '<td class="col-extra">' +
+              '<textarea class="note-edit" rows="2" ' +
+              'data-rowid="' + rowId + '" data-field="' + _esc(ec.key) + '" ' +
+              'aria-label="' + _esc(ec.label) + '" ' +
+              'placeholder="Add a note…">' + _esc(v) + '</textarea>' +
+              '</td>'
+            );
           }).join('');
 
           html.push(
@@ -313,6 +324,13 @@
       html.push('</div>'); /* #cs-groups */
       container.innerHTML = html.join('\n');
 
+      /* ── Note textarea save handler ────────────────────────────────── */
+      container.querySelectorAll('.note-edit').forEach(function(ta) {
+        ta.addEventListener('change', function() {
+          saveOverride(csvUrl, ta.dataset.rowid, ta.dataset.field, ta.value);
+        });
+      });
+
       /* ── Status select change handler ──────────────────────────────── */
       container.querySelectorAll('.status-select').forEach(function(sel) {
         sel.addEventListener('change', function() {
@@ -327,7 +345,7 @@
       var resetBtn = document.getElementById('cs-reset');
       if (resetBtn) {
         resetBtn.addEventListener('click', function() {
-          if (window.confirm('Reset all status edits to the original CSV values?')) {
+          if (window.confirm('Reset all edits (status and notes) to the original CSV values?')) {
             clearOverrides(csvUrl);
             location.reload();
           }
