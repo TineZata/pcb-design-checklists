@@ -66,7 +66,7 @@
   }
 
   /* ── Status badge helpers ────────────────────────────────────────────── */
-  var STATUS_OPTIONS = ['', 'PASS', 'FAIL', 'N/A'];
+  var STATUS_OPTIONS = ['', 'PASS', 'FAIL', 'N/A', 'PENDING'];
 
   var BADGE_CLASS = {
     'PASS':    'badge-pass',
