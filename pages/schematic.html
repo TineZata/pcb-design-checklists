@@ -1,0 +1,42 @@
+<!--
+  SPDX-License-Identifier: GPL-3.0-or-later
+  SPDX-FileCopyrightText: 2026 Tine Zata
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Schematic design checklist — 34 items across 7 categories covering ERC, symbols, power, connections and documentation.">
+  <title>Schematic Checklist — PCB Design Checklists</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div>
+      <div class="site-title">PCB Design Checklists</div>
+    </div>
+    <a href="../index.html" class="back-link">&#8592; All Checklists</a>
+  </header>
+
+  <main>
+    <h1 class="page-title">Schematic Checklist</h1>
+    <p class="page-desc">34 items across 7 categories — General, Component Symbols, Electrical Rules, Power &amp; Ground, Signal Integrity, Connections and Documentation.</p>
+    <div id="checklist-container"></div>
+  </main>
+
+  <script src="../assets/js/csv-loader.js"></script>
+  <script>
+    PCBChecklists.renderChecklist({
+      csvUrl:      '../checklists/csv/schematic_checklist.csv',
+      groupKey:    'category',
+      textKey:     'item',
+      statusKeys:  [{ key: 'status', label: 'Status' }],
+      extraCols:   [{ key: 'notes',  label: 'Notes'  }],
+      containerId: 'checklist-container'
+    });
+  </script>
+
+</body>
+</html>
