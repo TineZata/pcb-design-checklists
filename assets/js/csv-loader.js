@@ -2,7 +2,8 @@
 // SPDX-FileCopyrightText: 2026 Tine Zata
 
 /* PCB Design Checklists — CSV Loader
- * Fetches a CSV file, parses it, and renders a filterable grouped table.
+ * Fetches a CSV file, parses it, and renders a filterable grouped table
+ * with editable status dropdowns that persist to localStorage.
  * Usage: PCBChecklists.renderChecklist(config)
  */
 (function (global) {
@@ -64,7 +65,9 @@
     return map;
   }
 
-  /* ── Status badge ────────────────────────────────────────────────────── */
+  /* ── Status badge helpers ────────────────────────────────────────────── */
+  var STATUS_OPTIONS = ['', 'PASS', 'FAIL', 'N/A'];
+
   var BADGE_CLASS = {
     'PASS':    'badge-pass',
     'FAIL':    'badge-fail',
@@ -72,10 +75,24 @@
     'PENDING': 'badge-pending'
   };
 
-  function badgeHTML(value) {
+  function badgeClass(value) {
+    var v = (value || '').trim().toUpperCase();
+    return BADGE_CLASS[v] || (v === '' ? 'badge-empty' : 'badge-na');
+  }
+
+  /* Editable <select> styled as a badge */
+  function statusSelectHTML(value, rowId, fieldKey) {
     var v   = (value || '').trim();
-    var cls = BADGE_CLASS[v.toUpperCase()] || (v === '' ? 'badge-empty' : 'badge-na');
-    return '<span class="badge ' + cls + '">' + (v || '—') + '</span>';
+    var cls = badgeClass(v);
+    var opts = STATUS_OPTIONS.map(function(opt) {
+      var sel = (opt.toUpperCase() === v.toUpperCase()) ? ' selected' : '';
+      return '<option value="' + opt + '"' + sel + '>' + (opt || '\u2014') + '</option>';
+    }).join('');
+    return (
+      '<select class="status-select ' + cls + '" ' +
+      'data-rowid="' + rowId + '" data-field="' + _esc(fieldKey) + '" ' +
+      'aria-label="Status">' + opts + '</select>'
+    );
   }
 
   /* ── Stats calculation ───────────────────────────────────────────────── */
@@ -84,31 +101,108 @@
     rows.forEach(function(row) {
       statusKeys.forEach(function(sk) {
         var v = (row[sk.key] || '').trim().toUpperCase();
-        if      (v === 'PASS')    c.PASS++;
-        else if (v === 'FAIL')    c.FAIL++;
-        else if (v === 'N/A')     c.NA++;
-        else                      c.pending++;
+        if      (v === 'PASS') c.PASS++;
+        else if (v === 'FAIL') c.FAIL++;
+        else if (v === 'N/A')  c.NA++;
+        else                   c.pending++;
       });
     });
     return c;
   }
 
+  /* ── Stats bar (initial HTML with addressable ids) ───────────────────── */
   function statsBarHTML(c, total) {
     var pct = total > 0 ? Math.round((c.PASS / total) * 100) : 0;
     return [
-      '<div class="stats-bar">',
+      '<div class="stats-bar" id="cs-stats-bar">',
       '  <div class="stats-counts">',
-      '    <span class="stat-item"><span class="badge badge-pass">' + c.PASS    + '</span> Pass</span>',
-      '    <span class="stat-item"><span class="badge badge-fail">' + c.FAIL    + '</span> Fail</span>',
-      '    <span class="stat-item"><span class="badge badge-na">'   + c.NA      + '</span> N/A</span>',
-      '    <span class="stat-item"><span class="badge badge-pending">' + c.pending + '</span> Pending</span>',
-      '    <span class="stat-item total">' + total + ' status checks total</span>',
+      '    <span class="stat-item"><span class="badge badge-pass"    id="cs-stat-pass">'    + c.PASS    + '</span> Pass</span>',
+      '    <span class="stat-item"><span class="badge badge-fail"    id="cs-stat-fail">'    + c.FAIL    + '</span> Fail</span>',
+      '    <span class="stat-item"><span class="badge badge-na"      id="cs-stat-na">'      + c.NA      + '</span> N/A</span>',
+      '    <span class="stat-item"><span class="badge badge-pending" id="cs-stat-pending">' + c.pending + '</span> Pending</span>',
+      '    <span class="stat-item total" id="cs-stat-total">' + total + ' status checks total</span>',
       '  </div>',
       '  <div class="progress-wrap">',
-      '    <div class="progress-bar" style="width:' + pct + '%" title="' + pct + '% pass"></div>',
+      '    <div class="progress-bar" id="cs-progress-bar" style="width:' + pct + '%" title="' + pct + '% pass"></div>',
       '  </div>',
       '</div>'
     ].join('\n');
+  }
+
+  /* ── Live stats refresh (called after every select change) ───────────── */
+  function refreshStats(container) {
+    var g = { PASS: 0, FAIL: 0, NA: 0, pending: 0 };
+    var total = 0;
+
+    container.querySelectorAll('.cat-group').forEach(function(group) {
+      var cat = { PASS: 0, FAIL: 0, NA: 0, pending: 0 };
+      var catTotal = 0;
+
+      group.querySelectorAll('tbody tr').forEach(function(tr) {
+        var selects = tr.querySelectorAll('.status-select');
+        var vals    = [];
+        selects.forEach(function(sel) {
+          var v = (sel.value || '').trim().toUpperCase();
+          if      (v === 'PASS') { cat.PASS++;    g.PASS++; }
+          else if (v === 'FAIL') { cat.FAIL++;    g.FAIL++; }
+          else if (v === 'N/A')  { cat.NA++;      g.NA++;   }
+          else                   { cat.pending++; g.pending++; }
+          catTotal++; total++;
+          if (v) vals.push(v);
+        });
+        /* Keep data-status in sync for the filter to work */
+        tr.dataset.status = vals.join(' ');
+      });
+
+      /* Update the % pass badge inside the category header */
+      var catPct   = catTotal > 0 ? Math.round((cat.PASS / catTotal) * 100) : 0;
+      var pctBadge = group.querySelector('.cat-meta .badge');
+      if (pctBadge) {
+        pctBadge.textContent = catPct + '% pass';
+        pctBadge.className   = 'badge ' + (cat.FAIL > 0 ? 'badge-fail' : (catPct === 100 ? 'badge-pass' : 'badge-na'));
+      }
+    });
+
+    /* Update global stats bar */
+    var pct = total > 0 ? Math.round((g.PASS / total) * 100) : 0;
+    var el;
+    if ((el = document.getElementById('cs-stat-pass')))    el.textContent = g.PASS;
+    if ((el = document.getElementById('cs-stat-fail')))    el.textContent = g.FAIL;
+    if ((el = document.getElementById('cs-stat-na')))      el.textContent = g.NA;
+    if ((el = document.getElementById('cs-stat-pending'))) el.textContent = g.pending;
+    if ((el = document.getElementById('cs-stat-total')))   el.textContent = total + ' status checks total';
+    if ((el = document.getElementById('cs-progress-bar'))) {
+      el.style.width = pct + '%';
+      el.title = pct + '% pass';
+    }
+  }
+
+  /* ── localStorage helpers ────────────────────────────────────────────── */
+  function lsPrefix(csvUrl) { return 'pcb-cl:' + csvUrl + ':'; }
+
+  function loadOverrides(csvUrl, rows, statusKeys) {
+    try {
+      var prefix = lsPrefix(csvUrl);
+      rows.forEach(function(row, idx) {
+        statusKeys.forEach(function(sk) {
+          var saved = localStorage.getItem(prefix + idx + ':' + sk.key);
+          if (saved !== null) row[sk.key] = saved;
+        });
+      });
+    } catch (e) { /* localStorage may be unavailable (e.g. private browsing with strict settings) */ }
+  }
+
+  function saveOverride(csvUrl, rowId, fieldKey, value) {
+    try { localStorage.setItem(lsPrefix(csvUrl) + rowId + ':' + fieldKey, value); } catch (e) {}
+  }
+
+  function clearOverrides(csvUrl) {
+    try {
+      var prefix = lsPrefix(csvUrl);
+      Object.keys(localStorage)
+        .filter(function(k) { return k.indexOf(prefix) === 0; })
+        .forEach(function(k) { localStorage.removeItem(k); });
+    } catch (e) {}
   }
 
   /* ── Main render function ────────────────────────────────────────────── */
@@ -127,11 +221,13 @@
 
     fetchCSV(csvUrl).then(function(rows) {
 
-      var grouped  = groupBy(rows, groupKey);
-      var allStats = calcStats(rows, statusKeys);
+      /* Apply any saved overrides before rendering */
+      loadOverrides(csvUrl, rows, statusKeys);
+
+      var grouped   = groupBy(rows, groupKey);
+      var allStats  = calcStats(rows, statusKeys);
       var statTotal = rows.length * (statusKeys.length || 1);
 
-      /* Build status column headers */
       var statusTH = statusKeys.map(function(sk) {
         return '<th class="col-status">' + sk.label + '</th>';
       }).join('');
@@ -151,11 +247,15 @@
         '    <option value="PENDING">Pending / blank</option>',
         '  </select>',
         '  <a href="' + csvUrl + '" download class="btn-download">&#8659; Download CSV</a>',
+        '  <button type="button" class="btn-reset" id="cs-reset" title="Clear all edits and restore CSV defaults">&#8635; Reset</button>',
         '</div>',
         '<div id="cs-groups">'
       ];
 
+      /* Global row index for stable localStorage keys */
+      var globalRowIdx = 0;
       var catIdx = 0;
+
       grouped.forEach(function(catRows, cat) {
         var cs     = calcStats(catRows, statusKeys);
         var catTot = catRows.length * (statusKeys.length || 1);
@@ -184,12 +284,13 @@
         );
 
         catRows.forEach(function(row, i) {
+          var rowId = globalRowIdx++;
           var statusVals = statusKeys.map(function(sk) {
             return (row[sk.key] || '').toUpperCase();
           }).join(' ');
 
           var statusTD = statusKeys.map(function(sk) {
-            return '<td class="col-status">' + badgeHTML(row[sk.key]) + '</td>';
+            return '<td class="col-status">' + statusSelectHTML(row[sk.key], rowId, sk.key) + '</td>';
           }).join('');
 
           var extraTD = extraCols.map(function(ec) {
@@ -212,13 +313,34 @@
       html.push('</div>'); /* #cs-groups */
       container.innerHTML = html.join('\n');
 
+      /* ── Status select change handler ──────────────────────────────── */
+      container.querySelectorAll('.status-select').forEach(function(sel) {
+        sel.addEventListener('change', function() {
+          var newVal = sel.value;
+          sel.className = 'status-select ' + badgeClass(newVal);
+          saveOverride(csvUrl, sel.dataset.rowid, sel.dataset.field, newVal);
+          refreshStats(container);
+        });
+      });
+
+      /* ── Reset button ──────────────────────────────────────────────── */
+      var resetBtn = document.getElementById('cs-reset');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+          if (window.confirm('Reset all status edits to the original CSV values?')) {
+            clearOverrides(csvUrl);
+            location.reload();
+          }
+        });
+      }
+
       /* ── Expand / collapse ─────────────────────────────────────────── */
       container.querySelectorAll('.cat-header').forEach(function(btn) {
         btn.addEventListener('click', function() {
           var open   = btn.getAttribute('aria-expanded') === 'true';
           var bodyEl = document.getElementById(btn.getAttribute('aria-controls'));
           btn.setAttribute('aria-expanded', String(!open));
-          bodyEl.style.display   = open ? 'none' : '';
+          bodyEl.style.display = open ? 'none' : '';
           btn.querySelector('.cat-chevron').innerHTML = open ? '&#9656;' : '&#9662;';
         });
       });
@@ -248,7 +370,6 @@
           group.style.display = (visible === 0 && (query || statusVal)) ? 'none' : '';
         });
 
-        /* Show helpful message if everything is hidden */
         var allHidden = container.querySelectorAll('.cat-group:not([style*="none"])').length === 0;
         var existing  = container.querySelector('.no-results');
         if (allHidden && (query || statusVal)) {
