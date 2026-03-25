@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: 2026 Tine Zata
 category,item,status,notes
 General,Schematic title block completed,pending,
 General,Page numbers and total pages indicated,pending,

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// SPDX-FileCopyrightText: 2026 Tine Zata
+
 /* PCB Design Checklists — CSV Loader
  * Fetches a CSV file, parses it, and renders a filterable grouped table.
  * Usage: PCBChecklists.renderChecklist(config)

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: 2026 Tine Zata
 category,item,status,notes
 Board Setup,Board outline defined and correct dimensions,pending,
 Board Setup,Layer stackup defined and approved,pending,

@@ -1,3 +1,8 @@
+<!--
+  SPDX-License-Identifier: GPL-3.0-or-later
+  SPDX-FileCopyrightText: 2026 Tine Zata
+-->
+
 # PCB Design Checklists
 
 Structured PCB design review checklists served as a static GitHub Pages site. Checklist data lives in CSV files under `checklists/csv/` and is rendered interactively in the browser — no build step required.

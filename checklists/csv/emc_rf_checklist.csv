@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-FileCopyrightText: 2026 Tine Zata
 topic,item_no,criteria,comments,designer_status,checker_status
 EMC/RF,1,Do any IC floating inputs (particularly those that can cause device shut-down) have sufficiently stiff pull-up or pull-down voltage levels applied to prevent false triggering when exposed to an RF field,,FAIL,FAIL
 EMC/RF,2,Are all linear regulator inputs adequately by-passed using decade capacitors if necessary,,FAIL,FAIL
