@@ -11,6 +11,8 @@
   /* ── CSV Parser (RFC 4180) ───────────────────────────────────────────── */
   function parseCSV(text) {
     text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    // Strip comment lines (SPDX headers etc.) before parsing
+    text = text.split('\n').filter(function(l) { return l.charAt(0) !== '#'; }).join('\n');
     if (text[text.length - 1] !== '\n') text += '\n';
 
     var rows = [], fields = [], field = '', inQuotes = false;
