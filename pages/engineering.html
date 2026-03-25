@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="General engineering checklist for PCB design — 28 items across 5 categories.">
+  <title>Engineering Checklist — PCB Design Checklists</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div>
+      <div class="site-title">PCB Design Checklists</div>
+    </div>
+    <a href="../index.html" class="back-link">&#8592; All Checklists</a>
+  </header>
+
+  <main>
+    <h1 class="page-title">Engineering Checklist</h1>
+    <p class="page-desc">28 items across 5 categories — Project Setup, Electrical Design, Component Selection, Design Review and Documentation.</p>
+    <div id="checklist-container"></div>
+  </main>
+
+  <script src="../assets/js/csv-loader.js"></script>
+  <script>
+    PCBChecklists.renderChecklist({
+      csvUrl:      '../checklists/csv/engineering_checklist.csv',
+      groupKey:    'category',
+      textKey:     'item',
+      statusKeys:  [{ key: 'status', label: 'Status' }],
+      extraCols:   [{ key: 'notes',  label: 'Notes'  }],
+      containerId: 'checklist-container'
+    });
+  </script>
+
+</body>
+</html>

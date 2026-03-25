@@ -1,0 +1,247 @@
+/* PCB Design Checklists — Shared Styles */
+
+:root {
+  --bg:             #f1f5f9;
+  --surface:        #ffffff;
+  --border:         #e2e8f0;
+  --border-strong:  #cbd5e1;
+  --text:           #0f172a;
+  --text-muted:     #64748b;
+  --text-light:     #94a3b8;
+  --accent:         #1d4ed8;
+  --accent-hover:   #1e40af;
+  --accent-light:   #eff6ff;
+
+  --pass-bg:      #dcfce7; --pass-text:    #15803d; --pass-border:    #86efac;
+  --fail-bg:      #fee2e2; --fail-text:    #b91c1c; --fail-border:    #fca5a5;
+  --na-bg:        #f1f5f9; --na-text:      #475569; --na-border:      #cbd5e1;
+  --pending-bg:   #fef9c3; --pending-text: #854d0e; --pending-border: #fde047;
+
+  --radius-sm: 4px;
+  --radius:    8px;
+  --radius-lg: 12px;
+  --shadow:    0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -2px rgba(0,0,0,.1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+/* ── Site Header ────────────────────────────────────────────────────────── */
+.site-header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+  color: #fff;
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.site-header a     { color: #93c5fd; text-decoration: none; }
+.site-header a:hover { color: #fff; text-decoration: underline; }
+.site-title        { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; }
+.site-subtitle     { font-size: 0.8125rem; color: #94a3b8; margin-top: 2px; }
+.back-link         { font-size: 0.875rem; white-space: nowrap; }
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+main { max-width: 1180px; margin: 0 auto; padding: 32px 24px 64px; }
+
+/* ── Page heading ────────────────────────────────────────────────────────── */
+.page-title { font-size: 1.625rem; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.03em; }
+.page-desc  { color: var(--text-muted); margin-bottom: 24px; font-size: 0.9375rem; }
+
+/* ── Stats bar ───────────────────────────────────────────────────────────── */
+.stats-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+.stats-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 0.875rem;
+}
+.stat-item         { display: flex; align-items: center; gap: 6px; color: var(--text-muted); }
+.stat-item.total   { color: var(--text); font-weight: 600; margin-left: auto; }
+.progress-wrap     { background: var(--border); border-radius: 99px; height: 6px; overflow: hidden; }
+.progress-bar      { background: var(--pass-text); height: 100%; border-radius: 99px; transition: width 0.4s ease; min-width: 0; }
+
+/* ── Controls ────────────────────────────────────────────────────────────── */
+.controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; align-items: center; }
+
+.controls input[type=search],
+.controls select {
+  padding: 8px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  background: var(--surface);
+  color: var(--text);
+  outline-offset: 2px;
+}
+.controls input[type=search] { flex: 1; min-width: 200px; }
+.controls select              { cursor: pointer; }
+
+.controls input[type=search]:focus,
+.controls select:focus        { outline: 2px solid var(--accent); border-color: var(--accent); }
+
+.btn-download {
+  margin-left: auto;
+  padding: 8px 14px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.btn-download:hover { background: var(--accent-hover); }
+
+/* ── Category group ──────────────────────────────────────────────────────── */
+.cat-group {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.cat-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text);
+  text-align: left;
+  transition: background 0.1s;
+}
+.cat-header:hover  { background: #f8fafc; }
+.cat-name          { flex: 1; }
+.cat-meta          { display: flex; align-items: center; gap: 8px; }
+.cat-count         { font-size: 0.8125rem; color: var(--text-muted); font-weight: 400; }
+.cat-chevron       { font-size: 0.75rem; color: var(--text-muted); transition: transform 0.2s; user-select: none; }
+
+/* ── Table ───────────────────────────────────────────────────────────────── */
+.cat-body          { border-top: 1px solid var(--border); overflow-x: auto; }
+
+.checklist-table   { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.checklist-table thead      { background: #f8fafc; }
+.checklist-table th {
+  padding: 9px 14px;
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.checklist-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.checklist-table tbody tr:last-child td { border-bottom: none; }
+.checklist-table tbody tr:hover         { background: var(--accent-light); }
+
+.col-num    { width: 36px;  color: var(--text-light); font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+.col-text   { line-height: 1.55; }
+.col-status { width: 78px; text-align: center; white-space: nowrap; }
+.col-extra  { width: 220px; color: var(--text-muted); font-size: 0.8125rem; line-height: 1.45; }
+.note-text  { font-style: italic; }
+
+/* ── Badges ──────────────────────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+.badge-pass    { background: var(--pass-bg);    color: var(--pass-text);    border-color: var(--pass-border); }
+.badge-fail    { background: var(--fail-bg);    color: var(--fail-text);    border-color: var(--fail-border); }
+.badge-na      { background: var(--na-bg);      color: var(--na-text);      border-color: var(--na-border); }
+.badge-pending { background: var(--pending-bg); color: var(--pending-text); border-color: var(--pending-border); }
+.badge-empty   { background: var(--na-bg);      color: var(--text-light);   border-color: var(--border); }
+
+/* ── Loading / error states ─────────────────────────────────────────────── */
+.loading { padding: 48px; text-align: center; color: var(--text-muted); }
+.error   { padding: 48px; text-align: center; color: #b91c1c; }
+
+/* No results message */
+.no-results { padding: 24px; text-align: center; color: var(--text-muted); font-size: 0.875rem; }
+
+/* ── Index page ──────────────────────────────────────────────────────────── */
+.hero          { margin-bottom: 4px; }
+.hero-title    { font-size: 2rem; font-weight: 800; letter-spacing: -0.04em; margin-bottom: 8px; }
+.hero-subtitle { font-size: 1rem; color: var(--text-muted); max-width: 560px; line-height: 1.6; }
+
+.checklist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 18px;
+  margin-top: 28px;
+}
+.checklist-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  text-decoration: none;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s, transform 0.15s, border-color 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.checklist-card:hover  { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: var(--accent); }
+.card-icon   { font-size: 1.75rem; line-height: 1; }
+.card-title  { font-size: 1.0625rem; font-weight: 700; margin-top: 2px; }
+.card-desc   { font-size: 0.875rem; color: var(--text-muted); line-height: 1.55; }
+.card-meta   { font-size: 0.8125rem; color: var(--text-light); margin-top: auto; padding-top: 10px; border-top: 1px solid var(--border); }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .site-header    { padding: 16px 20px; }
+  main            { padding: 20px 16px 48px; }
+  .controls       { flex-direction: column; align-items: stretch; }
+  .btn-download   { margin-left: 0; text-align: center; }
+  .stat-item.total{ margin-left: 0; }
+  .col-extra      { display: none; }
+  .hero-title     { font-size: 1.5rem; }
+}
+
+@media print {
+  .controls, .btn-download, .cat-chevron { display: none !important; }
+  .cat-body   { display: block !important; }
+  body        { background: white; }
+  .checklist-table { font-size: 10pt; }
+  .cat-group  { box-shadow: none; border: 1px solid #ccc; }
+}

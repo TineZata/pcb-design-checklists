@@ -1,0 +1,17 @@
+topic,item_no,criteria,comments,designer_status,checker_status
+EMC/RF,1,Do any IC floating inputs (particularly those that can cause device shut-down) have sufficiently stiff pull-up or pull-down voltage levels applied to prevent false triggering when exposed to an RF field,,FAIL,FAIL
+EMC/RF,2,Are all linear regulator inputs adequately by-passed using decade capacitors if necessary,,FAIL,FAIL
+EMC/RF,3,"If potential dividers are used to modify voltages for precision measurements, are these bypassed at their sampling point to prevent noise pick-up",,FAIL,FAIL
+EMC/RF,4,Are SWMP magnetic components adequately snubbed to prevent broadband EM emissions,,FAIL,FAIL
+EMC/RF,5,All ICs particularly large flat-pack or ball-grid packages have bypass capacitors fitted close to ALL power input pins,,FAIL,FAIL
+EMC/RF,6,Power input wires are filtered at the PCB entry point or as a minimum capacitively bypassed for broadband of EM noise,,FAIL,FAIL
+EMC/RF,7,Ensure that there are no narrow points in the ground plane joining separate parts of it to ensure low ground impedances,,FAIL,FAIL
+EMC/RF,8,"If full embedded ground planes are not used, ensure that all ground return tracks are made as large as possible and brought to a single point as close as possible to the PSU or to power input terminals on the PCB",,FAIL,FAIL
+EMC/RF,9,"Ensure that any board sections or components known or expected to radiate interference in the EM spectrum >20kHz are screened with a metal can or other EM absorbing material, and all power I/O to them are adequately by-passed",,FAIL,FAIL
+EMC/RF,10,The inclusion of a ferrite bead on a power input trace can be useful to minimise EM interference in either direction — has this been included,,FAIL,FAIL
+EMC/RF,11,"Have all specialised application notes regarding power and ground plane location and other layout advice been consulted, with particular regard to mixed signal ICs such as ADCs",,FAIL,FAIL
+EMC/RF,12,Are any off-board filtering components such as clip-on ferrite sleeves etc required to ensure compliance with EM test standards,,FAIL,FAIL
+EMC/RF,13,"Links between analogue and digital ground planes (when both are used in a split-plane arrangement) should include a noise filter such as a ferrite bead on the linking track to the PCB power I/O connection. Ensure digital and analogue return currents do not share the same tracking while on the PCB",,, 
+EMC/RF,14,Has the use of pre-proven design blocks that have been shown to be EMC hardened been used as a primary design criterion,,,
+EMC/RF,15,Has the inclusion of ESD components on I/O connections that may be subject to static damage been considered and implemented,,,
+EMC/RF,16,"Pre-compliance EMC testing strategies at an EMC test house can be usefully employed at prototype stage to identify potential problems that may not have come to light during normal development lab testing — has this option been adequately considered",,,

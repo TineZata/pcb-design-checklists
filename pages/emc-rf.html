@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="EMC and RF design checklist for PCB engineers — 16 items covering filtering, shielding, ground planes and ESD.">
+  <title>EMC / RF Checklist — PCB Design Checklists</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div>
+      <div class="site-title">PCB Design Checklists</div>
+    </div>
+    <a href="../index.html" class="back-link">&#8592; All Checklists</a>
+  </header>
+
+  <main>
+    <h1 class="page-title">EMC / RF Checklist</h1>
+    <p class="page-desc">16 items covering electromagnetic compatibility and RF design concerns — bypass filtering, ground plane impedance, shielding, ferrite beads and ESD protection on I/O.</p>
+    <div id="checklist-container"></div>
+  </main>
+
+  <script src="../assets/js/csv-loader.js"></script>
+  <script>
+    PCBChecklists.renderChecklist({
+      csvUrl:      '../checklists/csv/emc_rf_checklist.csv',
+      groupKey:    'topic',
+      textKey:     'criteria',
+      statusKeys:  [
+        { key: 'designer_status', label: 'Designer' },
+        { key: 'checker_status',  label: 'Checker'  }
+      ],
+      extraCols:   [{ key: 'comments', label: 'Comments' }],
+      containerId: 'checklist-container'
+    });
+  </script>
+
+</body>
+</html>

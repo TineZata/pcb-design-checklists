@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Comprehensive 138-item PCB design review checklist covering 13 categories.">
+  <title>Design Review Checklist — PCB Design Checklists</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div>
+      <div class="site-title">PCB Design Checklists</div>
+    </div>
+    <a href="../index.html" class="back-link">&#8592; All Checklists</a>
+  </header>
+
+  <main>
+    <h1 class="page-title">Design Review Checklist</h1>
+    <p class="page-desc">138 items across 13 categories — Design Status, Components, Schematics, Tolerances, General Design, PCB Identification, PCB Design, Assemblies, Wired Assemblies, Parts Lists, Safety and Design Calculations.</p>
+    <div id="checklist-container"></div>
+  </main>
+
+  <script src="../assets/js/csv-loader.js"></script>
+  <script>
+    PCBChecklists.renderChecklist({
+      csvUrl:      '../checklists/csv/design_review_checklist.csv',
+      groupKey:    'category',
+      textKey:     'criteria',
+      statusKeys:  [
+        { key: 'designer_status', label: 'Designer' },
+        { key: 'checker_status',  label: 'Checker'  }
+      ],
+      extraCols:   [{ key: 'comments', label: 'Comments' }],
+      containerId: 'checklist-container'
+    });
+  </script>
+
+</body>
+</html>
