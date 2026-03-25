@@ -1,5 +1,3 @@
-# SPDX-License-Identifier: GPL-3.0-or-later
-# SPDX-FileCopyrightText: 2026 Tine Zata
 item_number,category,criteria,designer_status,checker_status,comments
 1,Design Status,Functionality,PASS,FAIL,
 2,Design Status,Temperature,PASS,FAIL,
