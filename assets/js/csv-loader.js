@@ -209,6 +209,22 @@
     } catch (e) {}
   }
 
+  /* ── CSV serializer (in-memory → RFC 4180 string) ─────────────────────── */
+  function serializeCSV(headers, rows) {
+    function escField(val) {
+      var s = String(val == null ? '' : val);
+      if (s.indexOf(',') !== -1 || s.indexOf('"') !== -1 || s.indexOf('\n') !== -1 || s.indexOf('\r') !== -1) {
+        return '"' + s.replace(/"/g, '""') + '"';
+      }
+      return s;
+    }
+    var lines = [headers.map(escField).join(',')];
+    rows.forEach(function(row) {
+      lines.push(headers.map(function(h) { return escField(row[h]); }).join(','));
+    });
+    return lines.join('\r\n');
+  }
+
   /* ── Main render function ────────────────────────────────────────────── */
   function renderChecklist(config) {
     var csvUrl      = config.csvUrl;
@@ -227,6 +243,9 @@
 
       /* Apply any saved overrides before rendering */
       loadOverrides(csvUrl, rows, statusKeys, extraCols);
+
+      /* Capture header order for CSV export */
+      var csvHeaders = rows.length > 0 ? Object.keys(rows[0]) : [];
 
       var grouped   = groupBy(rows, groupKey);
       var allStats  = calcStats(rows, statusKeys);
@@ -250,7 +269,7 @@
         '    <option value="N/A">N/A</option>',
         '    <option value="PENDING">Pending / blank</option>',
         '  </select>',
-        '  <a href="' + csvUrl + '" download class="btn-download">&#8659; Download CSV</a>',
+        '  <button type="button" id="cs-download" class="btn-download">&#8659; Download CSV</button>',
         '  <button type="button" class="btn-reset" id="cs-reset" title="Clear all edits and restore CSV defaults">&#8635; Reset</button>',
         '</div>',
         '<div id="cs-groups">'
@@ -327,6 +346,7 @@
       /* ── Note textarea save handler ────────────────────────────────── */
       container.querySelectorAll('.note-edit').forEach(function(ta) {
         ta.addEventListener('change', function() {
+          rows[parseInt(ta.dataset.rowid, 10)][ta.dataset.field] = ta.value;
           saveOverride(csvUrl, ta.dataset.rowid, ta.dataset.field, ta.value);
         });
       });
@@ -335,11 +355,29 @@
       container.querySelectorAll('.status-select').forEach(function(sel) {
         sel.addEventListener('change', function() {
           var newVal = sel.value;
+          rows[parseInt(sel.dataset.rowid, 10)][sel.dataset.field] = newVal;
           sel.className = 'status-select ' + badgeClass(newVal);
           saveOverride(csvUrl, sel.dataset.rowid, sel.dataset.field, newVal);
           refreshStats(container);
         });
       });
+
+      /* ── Download button ────────────────────────────────────────────── */
+      var downloadBtn = document.getElementById('cs-download');
+      if (downloadBtn) {
+        downloadBtn.addEventListener('click', function() {
+          var csvText = serializeCSV(csvHeaders, rows);
+          var blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = csvUrl.split('/').pop() || 'checklist.csv';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
+      }
 
       /* ── Reset button ──────────────────────────────────────────────── */
       var resetBtn = document.getElementById('cs-reset');
