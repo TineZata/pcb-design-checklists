@@ -9,7 +9,7 @@ Structured PCB design review checklists served as a static GitHub Pages site. Ch
 
 ## Live Site
 
-**https://tinez.github.io/pcb-design-checklists/**
+**https://tinezata.github.io/pcb-design-checklists/**
 
 Deployed automatically on every push to `main` via GitHub Actions.
 
